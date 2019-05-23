@@ -333,22 +333,22 @@ const create = (state, focused) => {
       //# retrieve the first focusable $el in our parent chain
       const $elToFocus = $elements.getFirstFocusableEl($(el))
 
-      if (focused.needsFocus($elToFocus, $previouslyFocused)) {
-        focused.fireFocus($elToFocus.get(0))
+      if (cy.needsFocus($elToFocus, $previouslyFocused)) {
 
-        //# if we are currently trying to focus
-        //# the body then calling body.focus()
-        //# is a noop, and it will not blur the
-        //# current element, which is all so wrong
-        if ($elToFocus.is('body')) {
-          const $focused = focused.getFocused()
+        if ($dom.isWindow($elToFocus)) {
+          // if the first focusable element from the click
+          // is the window, then we can skip the focus event
+          // since the user has clicked a non-focusable element
+          const $focused = cy.getFocused()
 
-          //# if the current focused element hasn't changed
-          //# then blur manually
-          if ($elements.isSame($focused, $previouslyFocused)) {
-            focused.fireBlur($focused.get(0))
+          if ($focused) {
+            cy.fireBlur($focused.get(0))
           }
+        } else {
+          // the user clicked inside a focusable element
+          cy.fireFocus($elToFocus.get(0))
         }
+
       }
 
       return mouseDownEvents
