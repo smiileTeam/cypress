@@ -24,8 +24,17 @@ const $utils = require('../cypress/utils')
 
 const fixedOrStickyRe = /(fixed|sticky)/
 
-const focusable = 'body,a[href],link[href],button,select,[tabindex],input,textarea,[contenteditable]'
-
+const focusable = [
+  'a[href]',
+  'area[href]',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  'button:not([disabled])',
+  'iframe',
+  '[tabindex]',
+  '[contentEditable]',
+]
 const inputTypeNeedSingleValueChangeRe = /^(date|time|month|week)$/
 const canSetSelectionRangeElementRe = /^(text|search|URL|tel|password)$/
 
@@ -198,6 +207,7 @@ const nativeMethods = {
   setSelectionRange: _nativeSetSelectionRange,
   modify: window.Selection.prototype.modify,
   focus: _nativeFocus,
+  hasFocus: window.document.hasFocus,
   blur: _nativeBlur,
   select: _nativeSelect,
 }
@@ -355,7 +365,9 @@ const isElement = function (obj) {
 }
 
 const isFocusable = ($el) => {
-  return $el.is(focusable)
+  return _.some(focusable, (sel) => {
+    return $el.is(sel)
+  })
 }
 
 const isType = function ($el, type) {
@@ -690,7 +702,16 @@ const getElements = ($el) => {
 const getContainsSelector = (text, filter = '') => {
   const escapedText = $utils.escapeQuotes(text)
 
-  return `${filter}:not(script):contains('${escapedText}'), ${filter}[type='submit'][value~='${escapedText}']`
+  // they may have written the filter as
+  // comma separated dom els, so we want to search all
+  // https://github.com/cypress-io/cypress/issues/2407
+  const filters = filter.trim().split(',')
+
+  const selectors = _.map(filters, (filter) => {
+    return `${filter}:not(script):contains('${escapedText}'), ${filter}[type='submit'][value~='${escapedText}']`
+  })
+
+  return selectors.join()
 }
 
 const priorityElement = 'input[type=\'submit\'], button, a, label'

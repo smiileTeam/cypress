@@ -1,4 +1,5 @@
 $ = require("jquery")
+_ = require('lodash')
 require("jquery.scrollto")
 _ = require('lodash')
 
