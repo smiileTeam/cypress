@@ -9,8 +9,6 @@ const { m } = require('../../../support/matchers')
 
 chai.use(chaiSubset)
 
-require('cypress-plugin-retries')
-
 const fail = function (str) {
   throw new Error(str)
 }
@@ -503,7 +501,7 @@ describe('src/cy/commands/actions/click', function () {
 
           done()
         }
-          , 100)
+        , 100)
       })
 
       cy.get('#sequential-clicks a').click({ multiple: true })
@@ -1136,7 +1134,7 @@ describe('src/cy/commands/actions/click', function () {
           _.delay(() => {
             $(this).addClass('clicked')
           }
-            , 50)
+          , 50)
 
           return false
         })
@@ -1156,7 +1154,7 @@ describe('src/cy/commands/actions/click', function () {
           _.delay(() => {
             $(this).addClass('clicked')
           }
-            , 50)
+          , 50)
 
           return false
         })
@@ -2016,7 +2014,8 @@ describe('src/cy/commands/actions/click', function () {
                 'Prevented Default?': false,
                 'Stopped Propagation?': false,
               },
-            ] })
+            ],
+          })
 
         })
       })
@@ -2408,7 +2407,7 @@ describe('src/cy/commands/actions/click', function () {
 
           done()
         }
-          , 200)
+        , 200)
       })
 
       cy.get('#sequential-clicks a').dblclick()

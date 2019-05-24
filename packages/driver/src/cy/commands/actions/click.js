@@ -8,20 +8,10 @@ const $actionability = require('../../actionability')
 module.exports = (Commands, Cypress, cy, state, config) => {
   const mouse = cy.internal.mouse
 
-  // should never be called unless actAsIfWindowHasFocus = false
-  const flushPrimedFocusEvents = () => {
-    const ElNeedingForceFocus = cy.needsForceFocus()
-
-    if (ElNeedingForceFocus) {
-      cy.fireFocus(ElNeedingForceFocus)
-    }
-
-  }
-
   return Commands.addAll({ prevSubject: 'element' }, {
     click (subject, positionOrX, y, options = {}) {
-    //# TODO handle pointer-events: none
-    //# http://caniuse.com/#feat=pointer-events
+      //# TODO handle pointer-events: none
+      //# http://caniuse.com/#feat=pointer-events
 
       let position
       let x
@@ -55,7 +45,7 @@ module.exports = (Commands, Cypress, cy, state, config) => {
         const $el = $dom.wrap(el)
 
         if (options.log) {
-        //# figure out the options which actually change the behavior of clicks
+          //# figure out the options which actually change the behavior of clicks
           deltaOptions = $utils.filterOutOptions(options)
 
           options._log = Cypress.log({
@@ -143,8 +133,6 @@ module.exports = (Commands, Cypress, cy, state, config) => {
 
           onReady: ($elToClick, coords) => {
 
-            flushPrimedFocusEvents()
-
             const { fromWindow, fromViewport } = coords
 
             const forceEl = options.force && $elToClick.get(0)
@@ -158,7 +146,7 @@ module.exports = (Commands, Cypress, cy, state, config) => {
           },
         })
         .catch((err) => {
-        //# snapshot only on click failure
+          //# snapshot only on click failure
           err.onFail = function () {
             if (options._log) {
               return options._log.snapshot()
@@ -225,7 +213,7 @@ module.exports = (Commands, Cypress, cy, state, config) => {
         const $el = $dom.wrap(el)
 
         if (options.log) {
-        //# figure out the options which actually change the behavior of clicks
+          //# figure out the options which actually change the behavior of clicks
           deltaOptions = $utils.filterOutOptions(options)
 
           options._log = Cypress.log({
@@ -322,8 +310,6 @@ module.exports = (Commands, Cypress, cy, state, config) => {
 
           onReady: ($elToClick, coords) => {
 
-            flushPrimedFocusEvents()
-
             const { fromWindow, fromViewport } = coords
             const forceEl = options.force && $elToClick.get(0)
             const moveEvents = mouse.mouseMove(fromViewport, forceEl)
@@ -337,7 +323,7 @@ module.exports = (Commands, Cypress, cy, state, config) => {
           },
         })
         .catch((err) => {
-        //# snapshot only on click failure
+          //# snapshot only on click failure
           err.onFail = function () {
             if (options._log) {
               return options._log.snapshot()
@@ -401,7 +387,7 @@ module.exports = (Commands, Cypress, cy, state, config) => {
         const $el = $dom.wrap(el)
 
         if (options.log) {
-        //# figure out the options which actually change the behavior of clicks
+          //# figure out the options which actually change the behavior of clicks
           deltaOptions = $utils.filterOutOptions(options)
 
           options._log = Cypress.log({
@@ -495,8 +481,6 @@ module.exports = (Commands, Cypress, cy, state, config) => {
 
           onReady: ($elToClick, coords) => {
 
-            flushPrimedFocusEvents()
-
             const { fromWindow, fromViewport } = coords
             const forceEl = options.force && $elToClick.get(0)
             const moveEvents = mouse.mouseMove(fromViewport, forceEl)
@@ -510,7 +494,7 @@ module.exports = (Commands, Cypress, cy, state, config) => {
           },
         })
         .catch((err) => {
-        //# snapshot only on click failure
+          //# snapshot only on click failure
           err.onFail = function () {
             if (options._log) {
               return options._log.snapshot()
