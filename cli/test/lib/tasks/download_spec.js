@@ -109,7 +109,9 @@ describe('lib/tasks/download', function () {
   it('saves example.zip to options.downloadDestination', function () {
     nock('https://aws.amazon.com')
     .get('/some.zip')
-    .reply(200, () => {return fs.createReadStream('test/fixture/example.zip')})
+    .reply(200, () => {
+      return fs.createReadStream('test/fixture/example.zip')
+    })
 
     nock('https://download.cypress.io')
     .get('/desktop/1.2.3')
@@ -136,7 +138,9 @@ describe('lib/tasks/download', function () {
   it('resolves with response x-version if present', function () {
     nock('https://aws.amazon.com')
     .get('/some.zip')
-    .reply(200, () => {return fs.createReadStream('test/fixture/example.zip')})
+    .reply(200, () => {
+      return fs.createReadStream('test/fixture/example.zip')
+    })
 
     nock('https://download.cypress.io')
     .get('/desktop/1.2.3')
@@ -156,7 +160,9 @@ describe('lib/tasks/download', function () {
 
     nock('https://aws.amazon.com')
     .get('/some.zip')
-    .reply(200, () => {return fs.createReadStream('test/fixture/example.zip')})
+    .reply(200, () => {
+      return fs.createReadStream('test/fixture/example.zip')
+    })
 
     nock('https://download.cypress.io')
     .get('/desktop/0.13.0')
