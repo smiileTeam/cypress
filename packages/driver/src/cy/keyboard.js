@@ -112,7 +112,7 @@ const getAsciiCode = (key) => {
 }
 
 const isModifier = (chars) => {
-  return !!modifierChars[chars]
+  return _.has(modifierChars, chars)
 }
 
 const toModifiersEventOptions = (modifiers) => {
@@ -125,7 +125,6 @@ const toModifiersEventOptions = (modifiers) => {
 }
 
 const fromModifierEventOptions = (eventOptions) => {
-  // debugger
   return _.pickBy({
     alt: eventOptions.altKey,
     ctrl: eventOptions.ctrlKey,
@@ -338,7 +337,7 @@ const create = function (state) {
         options.keypress = false
         options.textInput = false
         options.input = false
-        options.setKey = '{home}';
+        options.setKey = '{home}'
 
         return this.ensureKey(el, null, options, function () {
           return $selection.moveCursorToLineStart(el)
@@ -353,7 +352,7 @@ const create = function (state) {
         options.keypress = false
         options.textInput = false
         options.input = false
-        options.setKey = '{end}';
+        options.setKey = '{end}'
 
         return this.ensureKey(el, null, options, function () {
           return $selection.moveCursorToLineEnd(el)
@@ -368,7 +367,7 @@ const create = function (state) {
         options.keypress = false
         options.textInput = false
         options.input = false
-        options.setKey = '{pageup}';
+        options.setKey = '{pageup}'
 
         return this.ensureKey(el, null, options)
       },
@@ -381,7 +380,7 @@ const create = function (state) {
         options.keypress = false
         options.textInput = false
         options.input = false
-        options.setKey = '{pagedown}';
+        options.setKey = '{pagedown}'
 
         return this.ensureKey(el, null, options)
       },
@@ -406,7 +405,7 @@ const create = function (state) {
     },
 
     isSpecialChar (chars) {
-      return !!kb.specialChars[chars]
+      return _.has(kb.specialChars, chars)
     },
 
     type (options = {}) {
