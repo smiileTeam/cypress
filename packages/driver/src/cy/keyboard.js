@@ -21,6 +21,11 @@ const keyStandardMap = {
   '{leftarrow}': 'ArrowLeft',
   '{rightarrow}': 'ArrowRight',
   '{uparrow}': 'ArrowUp',
+  '{insert}': 'Insert',
+  '{home}': 'Home',
+  '{end}': 'End',
+  '{pageup}': 'PageUp',
+  '{pagedown}': 'PageDown',
   '{alt}': 'Alt',
   '{ctrl}': 'Control',
   '{meta}': 'Meta',
@@ -183,6 +188,20 @@ const create = function (state) {
       //# charCode = 8
       //# no keyPress
       //# no textInput
+      //# no input
+      '{insert}' (el, options) {
+        options.charCode = 45
+        options.keypress = false
+        options.textInput = false
+        options.input = false
+        options.setKey = '{insert}'
+
+        return kb.ensureKey(el, null, options)
+      },
+
+      //# charCode = 8
+      //# no keyPress
+      //# no textInput
       //# yes input (if value is actually changed)
       '{backspace}' (el, options) {
         options.charCode = 8
@@ -221,8 +240,6 @@ const create = function (state) {
 
         return kb.ensureKey(el, null, options)
       },
-
-      // "{tab}": (el, rng) ->
 
       '{{}' (el, options) {
         options.key = '{'
@@ -311,6 +328,63 @@ const create = function (state) {
           return $selection.moveCursorDown(el)
         })
       },
+
+      // charCode = 36
+      // no keyPress
+      // no textInput
+      // no input
+      '{home}' (el, options) {
+        options.charCode = 36
+        options.keypress = false
+        options.textInput = false
+        options.input = false
+        options.setKey = '{home}';
+
+        return this.ensureKey(el, null, options, function () {
+          return $selection.moveCursorToLineStart(el)
+        })
+      },
+      // charCode = 35
+      // no keyPress
+      // no textInput
+      // no input
+      '{end}' (el, options) {
+        options.charCode = 35
+        options.keypress = false
+        options.textInput = false
+        options.input = false
+        options.setKey = '{end}';
+
+        return this.ensureKey(el, null, options, function () {
+          return $selection.moveCursorToLineEnd(el)
+        })
+      },
+      // charCode = 33
+      // no keyPress
+      // no textInput
+      // no input
+      '{pageup}' (el, options) {
+        options.charCode = 33
+        options.keypress = false
+        options.textInput = false
+        options.input = false
+        options.setKey = '{pageup}';
+
+        return this.ensureKey(el, null, options)
+      },
+      // charCode = 34
+      // no keyPress
+      // no textInput
+      // no input
+      '{pagedown}' (el, options) {
+        options.charCode = 34
+        options.keypress = false
+        options.textInput = false
+        options.input = false
+        options.setKey = '{pagedown}';
+
+        return this.ensureKey(el, null, options)
+      },
     },
 
     countNumIndividualKeyStrokes (keys) {
@@ -328,7 +402,7 @@ const create = function (state) {
         return memo + chars.length
 
       }
-        , 0)
+      , 0)
     },
 
     isSpecialChar (chars) {
@@ -338,13 +412,13 @@ const create = function (state) {
     type (options = {}) {
       _.defaults(options, {
         delay: 10,
-        onEvent () {},
-        onBeforeEvent () {},
-        onBeforeType () {},
-        onValueChange () {},
-        onEnterPressed () {},
-        onNoMatchingSpecialChars () {},
-        onBeforeSpecialCharAction () {},
+        onEvent () { },
+        onBeforeEvent () { },
+        onBeforeType () { },
+        onValueChange () { },
+        onEnterPressed () { },
+        onNoMatchingSpecialChars () { },
+        onBeforeSpecialCharAction () { },
       })
 
       const el = options.$el.get(0)
@@ -649,8 +723,8 @@ const create = function (state) {
         if (isActivated) {
           kb.simulateModifier(activeEl, 'keyup', modifier, {
             window,
-            onBeforeEvent () {},
-            onEvent () {},
+            onBeforeEvent () { },
+            onEvent () { },
           })
         }
       }
