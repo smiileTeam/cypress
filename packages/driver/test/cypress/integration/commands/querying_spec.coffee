@@ -2,8 +2,6 @@ $ = Cypress.$.bind(Cypress)
 _ = Cypress._
 Promise = Cypress.Promise
 
-require('cypress-plugin-retries')
-
 describe "src/cy/commands/querying", ->
   before ->
     cy
