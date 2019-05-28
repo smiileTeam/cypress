@@ -1548,7 +1548,6 @@ describe('src/cy/commands/actions/click', function () {
 
         // sometimes the command will timeout early with
         // Error: coordsHistory must be at least 2 sets of coords
-        this.retries(4)
         cy.timeout(200)
 
         cy.$$('#three-buttons button').show().last().hide()
@@ -2575,7 +2574,6 @@ describe('src/cy/commands/actions/click', function () {
       })
 
       it('throws when any member of the subject isnt visible', function (done) {
-        this.retries(4)
         cy.$$('#three-buttons button').show().last().hide()
 
         cy.on('fail', (err) => {
@@ -3021,7 +3019,6 @@ describe('src/cy/commands/actions/click', function () {
       })
 
       it('throws when any member of the subject isnt visible', function (done) {
-        this.retries(4)
         cy.$$('#three-buttons button').show().last().hide()
 
         cy.on('fail', (err) => {
