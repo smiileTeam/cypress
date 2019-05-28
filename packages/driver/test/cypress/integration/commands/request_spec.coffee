@@ -1,10 +1,12 @@
 _ = Cypress._
 Promise = Cypress.Promise
+RESPONSE_TIMEOUT = 22222
 
 describe "src/cy/commands/request", ->
   context "#request", ->
     beforeEach ->
       cy.stub(Cypress, "backend").callThrough()
+      Cypress.config("responseTimeout", RESPONSE_TIMEOUT)
 
     describe "argument signature", ->
       beforeEach ->

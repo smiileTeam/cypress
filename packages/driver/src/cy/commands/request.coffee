@@ -19,6 +19,7 @@ REQUEST_DEFAULTS = {
   json: null
   form: null
   gzip: true
+  timeout: null
   followRedirect: true
   failOnStatusCode: true
   retryOnNetworkFailure: true
@@ -85,6 +86,9 @@ module.exports = (Commands, Cypress, cy, state, config) ->
       _.defaults(options, REQUEST_DEFAULTS, {
         log: true
       })
+
+      ## if timeout is not supplied, use the configured default
+      options.timeout ||= config("responseTimeout")
 
       options.method = options.method.toUpperCase()
 
