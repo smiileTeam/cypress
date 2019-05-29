@@ -2574,6 +2574,7 @@ describe('src/cy/commands/actions/click', function () {
       })
 
       it('throws when any member of the subject isnt visible', function (done) {
+        cy.timeout(300)
         cy.$$('#three-buttons button').show().last().hide()
 
         cy.on('fail', (err) => {
@@ -3019,6 +3020,7 @@ describe('src/cy/commands/actions/click', function () {
       })
 
       it('throws when any member of the subject isnt visible', function (done) {
+        cy.timeout(300)
         cy.$$('#three-buttons button').show().last().hide()
 
         cy.on('fail', (err) => {
