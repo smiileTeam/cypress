@@ -675,6 +675,28 @@ describe('src/cy/commands/actions/click', function () {
       })
     })
 
+    it('can click inside an iframe', () => {
+      cy.get('iframe')
+      .should($iframe => {
+        // wait for iframe to load
+        expect($iframe.contents().find('body').html()).ok
+      })
+      .then(($iframe) => {
+        // cypress does not wrap this as a DOM element (does not wrap in jquery)
+        // return cy.wrap($iframe[0].contentDocument.body)
+        return cy.wrap($iframe.contents().find('body'))
+      })
+
+      .within(() => {
+        cy.get('a#hashchange')
+        // .should($el => $el[0].click())
+        .click()
+      })
+      .then($body => {
+        expect($body[0].ownerDocument.defaultView.location.hash).eq('#hashchange')
+      })
+    })
+
     describe('actionability', () => {
 
       it('can click on inline elements that wrap lines', () => {
