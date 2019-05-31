@@ -1570,7 +1570,7 @@ describe('src/cy/commands/actions/click', function () {
 
         // sometimes the command will timeout early with
         // Error: coordsHistory must be at least 2 sets of coords
-        cy.timeout(200)
+        cy.timeout(300)
 
         cy.$$('#three-buttons button').show().last().hide()
 

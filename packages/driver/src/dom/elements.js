@@ -188,6 +188,7 @@ const nativeGetters = {
   type: _getType,
   activeElement: descriptor('Document', 'activeElement').get,
   body: descriptor('Document', 'body').get,
+  frameElement: Object.getOwnPropertyDescriptor(window, 'frameElement').get,
 }
 
 const nativeSetters = {
@@ -320,6 +321,10 @@ const isSelect = (el) => {
 
 const isBody = (el) => {
   return getTagName(el) === 'body'
+}
+
+const isIframe = (el) => {
+  return getTagName(el) === 'iframe'
 }
 
 const isSvg = function (el) {
@@ -847,6 +852,8 @@ module.exports = {
   isBody,
 
   isInput,
+
+  isIframe,
 
   isTextarea,
 

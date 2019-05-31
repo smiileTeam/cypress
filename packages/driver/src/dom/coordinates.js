@@ -1,4 +1,5 @@
 const $window = require('./window')
+const $elements = require('./elements')
 
 const getElementAtPointFromViewport = (doc, x, y) => {
   return doc.elementFromPoint(x, y)
@@ -22,12 +23,48 @@ const getElementPositioning = ($el) => {
   // const rect = el.getBoundingClientRect()
   const rect = el.getClientRects()[0] || el.getBoundingClientRect()
 
-  const center = getCenterCoordinates(rect)
+  function calculateAutIframeCoords (rect, el) {
+    let x = 0 //rect.left
+    let y = 0 //rect.top
+    let curWindow = el.ownerDocument.defaultView
+    let frame
+
+    while ($elements.getNativeProp(curWindow, 'frameElement')) {
+      frame = $elements.getNativeProp(curWindow, 'frameElement')
+      curWindow = curWindow.parent
+
+      if (curWindow && $elements.getNativeProp(curWindow, 'frameElement')) {
+        const frameRect = frame.getBoundingClientRect()
+
+        x += frameRect.left
+        y += frameRect.top
+      }
+      // Cypress will sometimes miss the Iframe if coords are too small
+      // remove this when test-runner is extracted out
+    }
+
+    const ret = {
+      left: x + rect.left,
+      top: y + rect.top,
+      right: x + rect.right,
+      bottom: y + rect.top,
+      width: rect.width,
+      height: rect.height,
+    }
+
+    // if (x) debugger
+
+    return ret
+
+  }
+
+  const rectCenter = getCenterCoordinates(rect)
+
+  const rectFromAut = calculateAutIframeCoords(rect, el)
+  const rectFromAutCenter = getCenterCoordinates(rectFromAut)
 
   // add the center coordinates
   // because its useful to any caller
-  const topCenter = center.y
-  const leftCenter = center.x
 
   return {
     scrollTop: el.scrollTop,
@@ -39,14 +76,15 @@ const getElementPositioning = ($el) => {
       left: rect.left,
       right: rect.right,
       bottom: rect.bottom,
-      topCenter,
-      leftCenter,
+      topCenter: rectCenter.y,
+      leftCenter: rectCenter.x,
+      doc: win.document,
     },
     fromWindow: {
-      top: rect.top + win.pageYOffset,
-      left: rect.left + win.pageXOffset,
-      topCenter: topCenter + win.pageYOffset,
-      leftCenter: leftCenter + win.pageXOffset,
+      top: rectFromAut.top + cy.state('window').pageYOffset,
+      left: rectFromAut.left + cy.state('window').pageXOffset,
+      topCenter: rectFromAutCenter.y + cy.state('window').pageYOffset,
+      leftCenter: rectFromAutCenter.x + cy.state('window').pageXOffset,
     },
   }
 }

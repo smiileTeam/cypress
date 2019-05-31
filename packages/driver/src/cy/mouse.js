@@ -9,6 +9,7 @@ const $selection = require('../dom/selection')
  * @typedef Coords
  * @property {number} x
  * @property {number} y
+ * @property {Document} doc
  */
 
 const getLastHoveredEl = (state) => {
@@ -51,9 +52,7 @@ const create = (state, focused) => {
      * @param {Coords} coords
      * @param {HTMLElement | false} force
      */
-    mouseMove ({ x, y }, force = false) {
-
-      const coords = { x, y }
+    mouseMove (coords, force = false) {
 
       const lastHoveredEl = getLastHoveredEl(state)
 
@@ -218,12 +217,14 @@ const create = (state, focused) => {
      * @param {HTMLElement} force
      * @returns {HTMLElement}
      */
-    getElAtCoordsOrForce ({ x, y }, force = false) {
+    getElAtCoordsOrForce ({ x, y, doc }, force = false) {
       if (force) {
         return force
       }
 
-      const el = state('document').elementFromPoint(x, y)
+      if (!doc) debugger
+
+      const el = doc.elementFromPoint(x, y)
 
       // mouse._mouseMoveEvents(el, { x, y })
 
@@ -381,10 +382,10 @@ const create = (state, focused) => {
     },
 
     /**
-     * @param {HTMLElement} el
-     * @param {Window} win
      * @param {Coords} fromViewport
+     * @param {HTMLElement} el
      * @param {HTMLElement} force
+     * @param {Window} win
      */
     _mouseUpEvents (fromViewport, force, skipMouseEvent, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
 
