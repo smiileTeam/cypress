@@ -4,6 +4,7 @@ const $ = require('jquery')
 const _ = require('lodash')
 const $Keyboard = require('./keyboard')
 const $selection = require('../dom/selection')
+const debug = require('debug')('driver:mouse')
 
 /**
  * @typedef Coords
@@ -50,20 +51,21 @@ const create = (state, focused) => {
 
     /**
      * @param {Coords} coords
-     * @param {HTMLElement | false} force
+     * @param {HTMLElement} forceEl
      */
-    mouseMove (coords, force = false) {
+    mouseMove (coords, forceEl) {
+      debug('mousemove', coords)
 
       const lastHoveredEl = getLastHoveredEl(state)
 
-      const targetEl = mouse.getElAtCoordsOrForce(coords, force)
+      const targetEl = mouse.getElAtCoordsOrForce(coords, forceEl)
 
       // if coords are same AND we're already hovered on the element, don't send move events
-      if (_.isEqual(coords, getMouseCoords(state)) && lastHoveredEl === targetEl) return { el: targetEl }
+      if (_.isEqual({ x: coords.x, y: coords.y }, getMouseCoords(state)) && lastHoveredEl === targetEl) return { el: targetEl }
 
       const events = mouse._mouseMoveEvents(targetEl, coords)
 
-      const resultEl = mouse.getElAtCoordsOrForce(coords, force)
+      const resultEl = mouse.getElAtCoordsOrForce(coords, forceEl)
 
       if (resultEl !== targetEl) {
         mouse._mouseMoveEvents(resultEl, coords)
@@ -214,15 +216,13 @@ const create = (state, focused) => {
     /**
      *
      * @param {Coords} coords
-     * @param {HTMLElement} force
+     * @param {HTMLElement} forceEl
      * @returns {HTMLElement}
      */
-    getElAtCoordsOrForce ({ x, y, doc }, force = false) {
-      if (force) {
-        return force
+    getElAtCoordsOrForce ({ x, y, doc }, forceEl) {
+      if (forceEl) {
+        return forceEl
       }
-
-      if (!doc) debugger
 
       const el = doc.elementFromPoint(x, y)
 
@@ -235,11 +235,11 @@ const create = (state, focused) => {
     /**
      *
      * @param {Coords} coords
-     * @param {HTMLElement} force
+     * @param {HTMLElement} forceEl
      */
-    moveToCoordsOrForce (coords, force = false) {
-      if (force) {
-        return force
+    moveToCoordsOrForce (coords, forceEl) {
+      if (forceEl) {
+        return forceEl
       }
 
       const { el } = mouse.mouseMove(coords)
@@ -249,12 +249,12 @@ const create = (state, focused) => {
 
     /**
      * @param {Coords} coords
-     * @param {HTMLElement} force
+     * @param {HTMLElement} forceEl
      */
-    _mouseDownEvents (coords, force, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
+    _mouseDownEvents (coords, forceEl, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
 
       const { x, y } = coords
-      const el = mouse.moveToCoordsOrForce(coords, force)
+      const el = mouse.moveToCoordsOrForce(coords, forceEl)
 
       const win = $dom.getWindowByElement(el)
 
@@ -312,11 +312,11 @@ const create = (state, focused) => {
 
     },
 
-    mouseDown (coords, force, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
+    mouseDown (coords, forceEl, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
 
       const $previouslyFocused = focused.getFocused()
 
-      const mouseDownEvents = mouse._mouseDownEvents(coords, force, pointerEvtOptionsExtend, mouseEvtOptionsExtend)
+      const mouseDownEvents = mouse._mouseDownEvents(coords, forceEl, pointerEvtOptionsExtend, mouseEvtOptionsExtend)
 
       // el we just send pointerdown
       const el = mouseDownEvents.pointerdownProps.el
@@ -334,20 +334,20 @@ const create = (state, focused) => {
       //# retrieve the first focusable $el in our parent chain
       const $elToFocus = $elements.getFirstFocusableEl($(el))
 
-      if (cy.needsFocus($elToFocus, $previouslyFocused)) {
+      if (focused.needsFocus($elToFocus, $previouslyFocused)) {
 
         if ($dom.isWindow($elToFocus)) {
           // if the first focusable element from the click
           // is the window, then we can skip the focus event
           // since the user has clicked a non-focusable element
-          const $focused = cy.getFocused()
+          const $focused = focused.getFocused()
 
           if ($focused) {
-            cy.fireBlur($focused.get(0))
+            focused.fireBlur($focused.get(0))
           }
         } else {
           // the user clicked inside a focusable element
-          cy.fireFocus($elToFocus.get(0))
+          focused.fireFocus($elToFocus.get(0))
         }
 
       }
@@ -359,14 +359,16 @@ const create = (state, focused) => {
      * @param {HTMLElement} el
      * @param {Window} win
      * @param {Coords} fromViewport
-     * @param {HTMLElement} force
+     * @param {HTMLElement} forceEl
      */
-    mouseUp (fromViewport, force, skipMouseEvent, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
-      return mouse._mouseUpEvents(fromViewport, force, skipMouseEvent, pointerEvtOptionsExtend, mouseEvtOptionsExtend)
+    mouseUp (fromViewport, forceEl, skipMouseEvent, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
+      debug('mouseUp', { fromViewport, forceEl, skipMouseEvent })
+
+      return mouse._mouseUpEvents(fromViewport, forceEl, skipMouseEvent, pointerEvtOptionsExtend, mouseEvtOptionsExtend)
     },
 
     mouseClick (fromViewport, forceEl, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
-
+      debug('mouseClick', { fromViewport, forceEl })
       const mouseDownEvents = mouse.mouseDown(fromViewport, forceEl, pointerEvtOptionsExtend, mouseEvtOptionsExtend)
 
       const skipMouseupEvent = mouseDownEvents.pointerdownProps.skipped || mouseDownEvents.pointerdownProps.preventedDefault
@@ -384,10 +386,10 @@ const create = (state, focused) => {
     /**
      * @param {Coords} fromViewport
      * @param {HTMLElement} el
-     * @param {HTMLElement} force
+     * @param {HTMLElement} forceEl
      * @param {Window} win
      */
-    _mouseUpEvents (fromViewport, force, skipMouseEvent, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
+    _mouseUpEvents (fromViewport, forceEl, skipMouseEvent, pointerEvtOptionsExtend = {}, mouseEvtOptionsExtend = {}) {
 
       const win = state('window')
 
@@ -407,7 +409,7 @@ const create = (state, focused) => {
         detail: 1,
       }, mouseEvtOptionsExtend)
 
-      const el = mouse.moveToCoordsOrForce(fromViewport, force)
+      const el = mouse.moveToCoordsOrForce(fromViewport, forceEl)
 
       let pointerupProps = sendPointerup(el, pointerEvtOptions)
 
@@ -429,8 +431,8 @@ const create = (state, focused) => {
 
     },
 
-    _mouseClickEvents (fromViewport, force = false, skipClickEvent = false, mouseEvtOptionsExtend = {}) {
-      const el = mouse.moveToCoordsOrForce(fromViewport, force)
+    _mouseClickEvents (fromViewport, forceEl, skipClickEvent, mouseEvtOptionsExtend = {}) {
+      const el = mouse.moveToCoordsOrForce(fromViewport, forceEl)
 
       const win = $dom.getWindowByElement(el)
 
@@ -454,8 +456,8 @@ const create = (state, focused) => {
       return { clickProps }
     },
 
-    _contextmenuEvent (fromViewport, force, mouseEvtOptionsExtend) {
-      const el = mouse.moveToCoordsOrForce(fromViewport, force)
+    _contextmenuEvent (fromViewport, forceEl, mouseEvtOptionsExtend) {
+      const el = mouse.moveToCoordsOrForce(fromViewport, forceEl)
 
       const win = $dom.getWindowByElement(el)
       const defaultOptions = mouse._getDefaultMouseOptions(fromViewport.x, fromViewport.y, win)
@@ -472,9 +474,9 @@ const create = (state, focused) => {
       return { contextmenuProps }
     },
 
-    dblclick (fromViewport, force = false, mouseEvtOptionsExtend = {}) {
+    dblclick (fromViewport, forceEl, mouseEvtOptionsExtend = {}) {
       const click = (clickNum) => {
-        const clickEvents = mouse.mouseClick(fromViewport, force, {}, { detail: clickNum })
+        const clickEvents = mouse.mouseClick(fromViewport, forceEl, {}, { detail: clickNum })
 
         return clickEvents
       }
@@ -482,7 +484,7 @@ const create = (state, focused) => {
       const clickEvents1 = click(1)
       const clickEvents2 = click(2)
 
-      const el = mouse.moveToCoordsOrForce(fromViewport, force)
+      const el = mouse.moveToCoordsOrForce(fromViewport, forceEl)
       const win = $dom.getWindowByElement(el)
 
       const dblclickEvtProps = _.extend(mouse._getDefaultMouseOptions(fromViewport.x, fromViewport.y, win), {

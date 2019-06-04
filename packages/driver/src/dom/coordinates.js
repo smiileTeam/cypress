@@ -12,6 +12,7 @@ const getElementPositioning = ($el) => {
   const el = $el[0]
 
   const win = $window.getWindowByElement(el)
+  let autFrame
 
   // properties except for width / height
   // are relative to the top left of the viewport
@@ -29,7 +30,11 @@ const getElementPositioning = ($el) => {
     let curWindow = el.ownerDocument.defaultView
     let frame
 
-    while ($elements.getNativeProp(curWindow, 'frameElement')) {
+    const isAutIframe = (win) => {
+      !$elements.getNativeProp(win.parent, 'frameElement')
+    }
+
+    while (!isAutIframe(curWindow) && window.parent !== window) {
       frame = $elements.getNativeProp(curWindow, 'frameElement')
       curWindow = curWindow.parent
 
@@ -43,6 +48,8 @@ const getElementPositioning = ($el) => {
       // remove this when test-runner is extracted out
     }
 
+    autFrame = curWindow
+
     const ret = {
       left: x + rect.left,
       top: y + rect.top,
@@ -51,8 +58,6 @@ const getElementPositioning = ($el) => {
       width: rect.width,
       height: rect.height,
     }
-
-    // if (x) debugger
 
     return ret
 
@@ -81,10 +86,10 @@ const getElementPositioning = ($el) => {
       doc: win.document,
     },
     fromWindow: {
-      top: rectFromAut.top + cy.state('window').pageYOffset,
-      left: rectFromAut.left + cy.state('window').pageXOffset,
-      topCenter: rectFromAutCenter.y + cy.state('window').pageYOffset,
-      leftCenter: rectFromAutCenter.x + cy.state('window').pageXOffset,
+      top: rectFromAut.top + autFrame.pageYOffset,
+      left: rectFromAut.left + autFrame.pageXOffset,
+      topCenter: rectFromAutCenter.y + autFrame.pageYOffset,
+      leftCenter: rectFromAutCenter.x + autFrame.pageXOffset,
     },
   }
 }
