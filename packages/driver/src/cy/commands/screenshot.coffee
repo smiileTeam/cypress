@@ -333,11 +333,10 @@ module.exports = (Commands, Cypress, cy, state, config) ->
             consoleProps
         })
 
-      numElements = $utils.getNumElements(subject)
-      if numElements > 1
+      if subject and subject.length > 1
         $utils.throwErrByPath("screenshot.multiple_elements", {
           log: options._log
-          args: { numElements }
+          args: { numElements: subject.length }
         })
 
       if $dom.isElement(subject)
