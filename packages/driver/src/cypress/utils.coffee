@@ -364,9 +364,4 @@ module.exports = {
           values
 
     run(0)
-  
-  getNumElements: (subject) ->
-    if !subject then return 0
-    if $window.isWindow(subject) then return 1
-    return subject.length
 }
