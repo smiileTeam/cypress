@@ -2592,7 +2592,7 @@ describe('src/cy/commands/actions/click', function () {
         cy.dblclick()
       })
 
-      it.only('throws when any member of the subject isnt visible', function (done) {
+      it('throws when any member of the subject isnt visible', function (done) {
         cy.timeout(600)
         cy.$$('#three-buttons button').show().last().hide()
 
