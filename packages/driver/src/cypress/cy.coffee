@@ -155,6 +155,12 @@ create = (specWindow, Cypress, Cookies, state, config, log) ->
           get: -> null
         })
 
+      contentWindow.HTMLElement.prototype.focus = (focusOption) ->
+        focused.interceptFocus(this, contentWindow, focusOption)
+
+      contentWindow.HTMLElement.prototype.blur = ->
+        focused.interceptBlur(this)
+
       contentWindow.SVGElement.prototype.focus = (focusOption) ->
         focused.interceptFocus(this, contentWindow, focusOption)
 
