@@ -3135,14 +3135,13 @@ describe "src/cy/commands/actions/type", ->
         cy
             .get(":text:first").type("{esc}")
             .should("have.value", "")
-  
-      describe 'reserved Javascript words', ->
-        _.each ["toString", "toLocaleString", "hasOwnProperty", "valueOf"
-          "undefined", "null", "true", "false", "True", "False"], (val) =>
-          it "allows typing reserved Javscript word (#{val})", ->
-            cy
-              .get(":text:first").type(val)
-              .should("have.value", val)
+            
+      _.each ["toString", "toLocaleString", "hasOwnProperty", "valueOf"
+         "undefined", "null", "true", "false", "True", "False"], (val) =>
+       it "allows typing reserved Javscript word (#{val})", ->
+         cy
+           .get(":text:first").type(val)
+           .should("have.value", val)
 
       _.each ["Ω≈ç√∫˜µ≤≥÷", "2.2250738585072011e-308", "田中さんにあげて下さい",
          "<foo val=`bar' />", "⁰⁴⁵₀₁₂", "🐵 🙈 🙉 🙊",

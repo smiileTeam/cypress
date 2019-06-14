@@ -5,7 +5,6 @@ moment = require("moment")
 Promise = require("bluebird")
 
 $jquery = require("../dom/jquery")
-$window = require('../dom/window.js')
 $Location = require("./location")
 $errorMessages = require("./error_messages")
 

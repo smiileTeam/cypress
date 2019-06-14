@@ -338,7 +338,7 @@ module.exports = (Commands, Cypress, cy, state, config) ->
       if not isWin and subject and subject.length > 1
         $utils.throwErrByPath("screenshot.multiple_elements", {
           log: options._log
-          args: { numElements }
+          args: { numElements: subject.length }
         })
 
       if $dom.isElement(subject)

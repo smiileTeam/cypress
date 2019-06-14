@@ -3,8 +3,6 @@ Promise = require("bluebird")
 
 $dom = require("../dom")
 $utils = require("../cypress/utils")
-JsDiff = require('diff')
-mochaUtils = require('mocha/lib/utils')
 
 ## TODO
 ## bTagOpen + bTagClosed
@@ -57,27 +55,6 @@ parseValueActualAndExpected = (value, actual, expected) ->
       delete obj.expected
 
   obj
-
-prepareObjsForDiff = (err) ->
-  if _.isString(err.actual) || _.isString(err.expected)
-    return err
-  ret = {}
-  ret.actual = mochaUtils.stringify(err.actual)
-  ret.expected = mochaUtils.stringify(err.expected)
-  return ret
-
-objToString = Object.prototype.toString
-
-_sameType = (a, b) ->
-  return objToString.call(a) is objToString.call(b)
-
-showDiff = (err) ->
-  return (
-    err &&
-    err.showDiff isnt false &&
-    _sameType(err.actual, err.expected) &&
-    err.expected isnt undefined
-  )
 
 create = (state, queue, retryFn) ->
   getUpcomingAssertions = ->
@@ -366,9 +343,6 @@ create = (state, queue, retryFn) ->
       message = message.replace(stackTracesRe, "\n")
 
     obj = parseValueActualAndExpected(value, actual, expected)
-    if showDiff(error)
-      diffObjs = prepareObjsForDiff(obj)
-      diff = JsDiff.createPatch('string', diffObjs.actual, diffObjs.expected)
 
     if $dom.isElement(value)
       obj.$el = $dom.wrap(value)
@@ -413,21 +387,12 @@ create = (state, queue, retryFn) ->
 
       consoleProps: =>
         obj = {Command: "assert"}
-        parsedValues = parseValueActualAndExpected(value, actual, expected)
 
-        _.extend obj, parsedValues
-        
-        
-        _.extend obj, {
+        _.extend obj, parseValueActualAndExpected(value, actual, expected)
+
+        _.extend obj,
           Message: message.replace(bTagOpen, "").replace(bTagClosed, "")
-        }
 
-        if diff
-          _.extend obj, {
-            Diff: diff
-          }
-
-        return obj
     ## think about completely gutting the whole object toString
     ## which chai does by default, its so ugly and worthless
 

@@ -5,8 +5,6 @@ const { _ } = Cypress
 const { Promise } = Cypress
 const chaiSubset = require('chai-subset')
 
-const { m } = require('../../../support/matchers')
-
 chai.use(chaiSubset)
 
 const fail = function (str) {
@@ -924,13 +922,10 @@ describe('src/cy/commands/actions/click', function () {
           // - element scrollIntoView
           // - element scrollIntoView (retry animation coords)
           // - window
-          expect(scrolled).to.matchEql(['element', 'element', 'window'])
-          expect(spy.args[0][0]).to.matchEql({
-            clientX: m.closeTo(60, 2),
-            clientY: 68,
-          })
-        }
-        )
+          expect(scrolled).to.deep.eq(['element', 'element', 'window'])
+          expect(spy.args[0][0]).property('clientX').closeTo(60, 2)
+          expect(spy.args[0][0]).property('clientY').eq(68)
+        })
       })
 
       it('scrolls the window past two fixed positioned elements when being covered', () => {
@@ -2597,8 +2592,8 @@ describe('src/cy/commands/actions/click', function () {
         cy.dblclick()
       })
 
-      it('throws when any member of the subject isnt visible', function (done) {
-        cy.timeout(300)
+      it.only('throws when any member of the subject isnt visible', function (done) {
+        cy.timeout(600)
         cy.$$('#three-buttons button').show().last().hide()
 
         cy.on('fail', (err) => {
